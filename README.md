@@ -48,6 +48,38 @@ Signed waivers appear under **Waivers → Signed Records**.
 [wp_waiver_form id="123"]  // uses waiver document #123
 ```
 
+## Captcha setup (optional)
+
+The built-in anti-bot layers (honeypot, time-trap, rate limit) work with zero
+configuration. To add a visible challenge on top, configure a provider under
+**Waivers → Settings** — the provider's script loads only when both keys are
+set, and clearing either key turns the captcha off again.
+
+### Google reCAPTCHA v2 (checkbox)
+
+1. Create keys at <https://www.google.com/recaptcha/admin/create>.
+2. **reCAPTCHA type:** choose **Challenge (v2) → "I'm not a robot" Checkbox**.
+   Score based (v3) and the Invisible badge are not supported.
+3. **Domains:** add your site's domain (subdomains are covered automatically;
+   add `localhost` too if you test locally). The Google Cloud Platform section
+   can be left at its defaults.
+4. Copy the **Site key** and **Secret key** into **Waivers → Settings**, set
+   the provider to *Google reCAPTCHA v2 (checkbox)*, and save.
+
+### Cloudflare Turnstile
+
+1. In the Cloudflare dashboard, open **Turnstile → Add widget** (any Cloudflare
+   account works — your site does not need to be behind Cloudflare).
+2. **Hostnames:** add your site's domain. Widget mode **Managed** is
+   recommended.
+3. Copy the **Site key** and **Secret key** into **Waivers → Settings**, set
+   the provider to *Cloudflare Turnstile*, and save.
+
+**Which one?** reCAPTCHA v2 shows an explicit checkbox; Turnstile is invisible
+for most visitors and doesn't involve Google. Both are verified server-side on
+every submission, and a failed check shows the visitor an error instead of the
+silent fake-success the bot layers use.
+
 ## Theming
 
 Override the CSS variables (all of them optional):

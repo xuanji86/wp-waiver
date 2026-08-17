@@ -2,24 +2,26 @@
  * Minimal signature pad for the waiver form. Vanilla JS, pointer events
  * (mouse / touch / stylus). Strokes are kept in memory and redrawn on
  * resize; on submit the canvas is exported as a PNG data URL into the
- * hidden w_sig_img field. No signature drawn -> submit is blocked.
+ * hidden wpw_sig_img field. No signature drawn -> submit is blocked.
+ * Ink/paper colors come from the --wpw-ink / --wpw-paper CSS variables.
  */
 (function () {
-	var canvas = document.getElementById('aaa-sigpad');
+	var canvas = document.getElementById('wpw-sigpad');
 	if (!canvas) {
 		return;
 	}
 	var form = canvas.closest('form');
-	var hidden = document.getElementById('aaa-sig-data');
-	var clearBtn = document.getElementById('aaa-sig-clear');
-	var hint = document.getElementById('aaa-sig-hint');
+	var hidden = document.getElementById('wpw-sig-data');
+	var clearBtn = document.getElementById('wpw-sig-clear');
+	var hint = document.getElementById('wpw-sig-hint');
 	var ctx = canvas.getContext('2d');
 	var strokes = [];
 	var current = null;
 	var drawing = false;
 
-	var PAPER = '#E8E6DE';
-	var INK = '#14130E';
+	var styles = window.getComputedStyle(canvas);
+	var PAPER = (styles.getPropertyValue('--wpw-paper') || '').trim() || '#f5f3ec';
+	var INK = (styles.getPropertyValue('--wpw-ink') || '').trim() || '#14130e';
 
 	function redraw() {
 		ctx.fillStyle = PAPER;

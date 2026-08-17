@@ -3,10 +3,8 @@
 Online waiver signing for WordPress: admin-editable waiver documents, a handwritten
 signature pad, tamper-evident signed records, and layered anti-bot protection —
 with **no third-party form plugins** and (by default) **no third-party requests**.
-
-Built for a real Texas shooting range ([Triple A Sportsman Club](https://aaarange.com)),
-generalized for any business that needs visitors to sign a release online: ranges,
-gyms, climbing walls, rentals, tours, events.
+For any business that needs visitors to sign a release online: ranges, gyms,
+climbing walls, rentals, tours, events.
 
 ## Features
 

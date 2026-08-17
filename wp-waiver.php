@@ -3,7 +3,7 @@
  * Plugin Name: WP Waiver
  * Plugin URI: https://github.com/xuanji86/wp-waiver
  * Description: Online waiver signing — admin-editable waiver documents, a handwritten signature pad, tamper-evident signed records, and layered anti-bot protection.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Old Steel Arsenal
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WP_WAIVER_VERSION', '1.0.0' );
+define( 'WP_WAIVER_VERSION', '1.0.1' );
 define( 'WP_WAIVER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_WAIVER_URL', plugin_dir_url( __FILE__ ) );
 

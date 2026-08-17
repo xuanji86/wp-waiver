@@ -1,0 +1,70 @@
+name: Release
+
+# Version-driven releases: bump the `Version:` plugin header (and add a
+# CHANGELOG entry), merge to main, and this workflow tags vX.Y.Z, builds the
+# installable zip, and publishes a GitHub release with the changelog section
+# as its notes. Pushes that don't change the version are no-ops.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read plugin version
+        id: version
+        run: |
+          VERSION=$(grep -m1 '\* Version:' wp-waiver.php | sed 's/.*Version:[[:space:]]*//' | tr -d '[:space:]')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Plugin version: $VERSION"
+
+      - name: Check whether v${{ steps.version.outputs.version }} already exists
+        id: tag
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag exists — nothing to release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build installable zip
+        if: steps.tag.outputs.exists == 'false'
+        run: |
+          mkdir -p build/wp-waiver
+          rsync -a --exclude .git --exclude .github --exclude build ./ build/wp-waiver/
+          cd build && zip -qr "wp-waiver-${{ steps.version.outputs.version }}.zip" wp-waiver
+
+      - name: Extract changelog notes
+        if: steps.tag.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { flag = 1; next }
+            /^## \[/ { flag = 0 }
+            flag' CHANGELOG.md > build/notes.md
+          if [ ! -s build/notes.md ]; then
+            echo "No CHANGELOG.md section for $VERSION — add one before releasing." >&2
+            exit 1
+          fi
+          cat build/notes.md
+
+      - name: Create release
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release create "v$VERSION" \
+            --title "WP Waiver $VERSION" \
+            --notes-file build/notes.md \
+            "build/wp-waiver-$VERSION.zip"
